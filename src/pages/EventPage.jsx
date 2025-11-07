@@ -566,8 +566,11 @@ function EventPage() {
 
   if (error || !eventData) return (
     <div className="flex min-h-screen bg-no-repeat bg-center" style={{backgroundImage: `url(${CentroAdminBg})`, backgroundSize: "100% 100%"}}>
-      <Sidebar handleButtonClick={handleButtonClick} activeButton={activeButton} />
-      <main className="flex-1 ml-64 p-4 overflow-hidden flex items-center justify-center">
+      <Sidebar onCollapseChange={setSidebarCollapsed} />
+      
+      <main className="flex-1 p-4 overflow-y-auto transition-all duration-300"
+        style={{ marginLeft: sidebarCollapsed ? "5rem" : "16rem" }}
+      >    
         <div className="bg-white rounded-lg shadow border-2 border-emerald-800 overflow-hidden p-8 text-center">
           <div className="text-red-500 text-6xl mb-4">⚠️</div>
           <h2 className="text-3xl font-bold font-montserrat  text-red-600 mb-4">Error</h2>
@@ -580,8 +583,11 @@ function EventPage() {
 
   return (
     <div className="flex min-h-screen bg-no-repeat bg-center" style={{backgroundImage: `url(${CentroAdminBg})`, backgroundSize: "100% 100%"}}>
-      <Sidebar handleButtonClick={handleButtonClick} activeButton={activeButton} />
-      <main className="flex-1 ml-64 p-6 overflow-hidden">
+      <Sidebar onCollapseChange={setSidebarCollapsed} />
+      
+      <main className="flex-1 p-4 overflow-y-auto transition-all duration-300"
+        style={{ marginLeft: sidebarCollapsed ? "5rem" : "16rem" }}
+      >    
         <div className="bg-white rounded-lg shadow overflow-hidden h-full flex flex-col">
           
           <div className={`${getHeaderColor(eventData.event_id)} rounded-t-full py-3 font-montserrat font-bold text-3xl shadow-md text-emerald-900 border-emerald-800 relative`}>
