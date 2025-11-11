@@ -444,6 +444,27 @@ function ReviewAiScheduling() {
     });
   };
 
+  const formatCallTime = (callTimeString) => {
+    if (!callTimeString) return "N/A";
+    
+    // Check if it's already in a readable format (e.g., "1 hour before")
+    if (!callTimeString.includes(":")) {
+      return callTimeString;
+    }
+    
+    // If it's in HH:MM:SS or HH:MM format, convert to AM/PM
+    const timeParts = callTimeString.split(":");
+    const hours = parseInt(timeParts[0]);
+    const minutes = parseInt(timeParts[1] || 0);
+    
+    const date = new Date(0, 0, 0, hours, minutes);
+    return date.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+  };
+
   const formatDate = (dateString) => {
     if (!dateString) return "";
     const date = new Date(dateString);
@@ -904,7 +925,7 @@ function ReviewAiScheduling() {
                     </div>
                     <div>
                       <p className="font-semibold text-emerald-800">Call Time:</p>
-                      <p className="text-gray-700">{eventDetails.call_time}</p>
+                      <p className="text-gray-700">{formatCallTime(eventDetails.call_time)}</p>
                     </div>
                     <div>
                       <p className="font-semibold text-emerald-800">Duration:</p>

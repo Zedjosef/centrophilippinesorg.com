@@ -604,7 +604,7 @@ function ReportModal({ isOpen, onClose, onGenerate }) {
         <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold text-emerald-900">
-              📄 Generate Report
+               Generate Report
             </h2>
             <button
               onClick={onClose}
@@ -857,10 +857,7 @@ function ChartModal({
     </div>
   );
 }
-
-// ============================================
 // MAIN DASHBOARD COMPONENT
-// ============================================
 function DashboardPage() {
   const { ngoCode } = useParams();
   const [dashboardData, setDashboardData] = useState({
