@@ -795,6 +795,56 @@ function DashboardPage() {
       applyFiltersToData();
     }
   }, [activeFilters]);
+  useEffect(() => {
+  if (!viewingContext?.ngo_code) return;
+
+  const channel = supabase
+    .channel("realtime:gender_updates")
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "User_Information" },
+      async (payload) => {
+        console.log("👥 Detected gender update:", payload);
+
+        try {
+          // Fetch all volunteers linked to this NGO
+          const { data: registeredVols } = await supabase
+            .from("Registered_Volunteers")
+            .select("user_id, joined_ngo")
+            .like("joined_ngo", `%${viewingContext.ngo_code}%`);
+
+          const volunteerIds =
+            registeredVols
+              ?.filter((vol) => {
+                if (!vol.joined_ngo) return false;
+                const ngoCodes = vol.joined_ngo.split("-");
+                return ngoCodes.includes(viewingContext.ngo_code);
+              })
+              .map((v) => v.user_id) || [];
+
+          // Get the updated gender data in real-time
+          const updatedGenderData = await fetchGenderDataRealtime(volunteerIds);
+
+          // Instantly update the dashboard display
+          setDashboardData((prev) => ({
+            ...prev,
+            volunteerGenderData: updatedGenderData,
+          }));
+        } catch (err) {
+          console.error("❌ Error refreshing gender data in real-time:", err);
+        }
+      }
+    )
+    .subscribe();
+
+  console.log("✅ Subscribed to Supabase real-time gender updates");
+
+  // Cleanup listener on unmount
+  return () => {
+    supabase.removeChannel(channel);
+    console.log("🧹 Unsubscribed from real-time gender updates");
+  };
+}, [viewingContext]);
 
   const initializeDashboard = async () => {
     try {
@@ -1018,7 +1068,7 @@ function DashboardPage() {
             default: return true;
           }
         });
-      }
+      }   
 
       // Apply specific months filter if selected
       if (activeFilters.dateRange === "specific-months" && activeFilters.selectedMonths.length > 0) {
