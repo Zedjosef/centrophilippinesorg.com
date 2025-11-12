@@ -36,9 +36,7 @@ const COLORS = {
   },
 };
 
-// ============================================
-// HELPER FUNCTION FOR REAL-TIME GENDER COUNTING
-// ============================================
+// Helper function for real-time gender counting
 const fetchGenderDataRealtime = async (volunteerIds) => {
   if (!volunteerIds || volunteerIds.length === 0) {
     return { male: 0, female: 0, malePercentage: 0, femalePercentage: 0 };
@@ -64,10 +62,8 @@ const fetchGenderDataRealtime = async (volunteerIds) => {
     });
 
     const total = maleCount + femaleCount;
-    const malePercentage =
-      total > 0 ? Math.round((maleCount / total) * 100) : 0;
-    const femalePercentage =
-      total > 0 ? Math.round((femaleCount / total) * 100) : 0;
+    const malePercentage = total > 0 ? Math.round((maleCount / total) * 100) : 0;
+    const femalePercentage = total > 0 ? Math.round((femaleCount / total) * 100) : 0;
 
     return {
       male: maleCount,
@@ -105,11 +101,7 @@ function ThreeDotsMenu({ onDownloadPDF, onDownloadWord }) {
         }}
         className="p-1 hover:bg-gray-100 rounded-full transition-colors"
       >
-        <svg
-          className="w-5 h-5 text-gray-600 cursor-pointer"
-          fill="currentColor"
-          viewBox="0 0 24 24"
-        >
+        <svg className="w-5 h-5 text-gray-600 cursor-pointer" fill="currentColor" viewBox="0 0 24 24">
           <circle cx="12" cy="5" r="2" />
           <circle cx="12" cy="12" r="2" />
           <circle cx="12" cy="19" r="2" />
@@ -126,18 +118,8 @@ function ThreeDotsMenu({ onDownloadPDF, onDownloadWord }) {
             }}
             className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2"
           >
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              />
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
             Download as PDF
           </button>
@@ -149,18 +131,8 @@ function ThreeDotsMenu({ onDownloadPDF, onDownloadWord }) {
             }}
             className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2 border-t"
           >
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              />
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
             Download as Word
           </button>
@@ -170,32 +142,215 @@ function ThreeDotsMenu({ onDownloadPDF, onDownloadWord }) {
   );
 }
 
+// Custom Calendar Component
+function CustomCalendar({ onClose, onApply, startDate, endDate }) {
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [selectedStart, setSelectedStart] = useState(startDate ? new Date(startDate) : null);
+  const [selectedEnd, setSelectedEnd] = useState(endDate ? new Date(endDate) : null);
+  const [isSelectingStart, setIsSelectingStart] = useState(true);
+
+  const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  const daysOfWeek = ["S", "M", "T", "W", "T", "F", "S"];
+
+  const getDaysInMonth = (date) => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    return { firstDay, daysInMonth };
+  };
+
+  const formatDateForInput = (date) => {
+    if (!date) return "";
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const year = date.getFullYear();
+    return `${month}/${day}/${year}`;
+  };
+
+  const handleDateClick = (day) => {
+    const clickedDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
+    
+    if (isSelectingStart) {
+      setSelectedStart(clickedDate);
+      setSelectedEnd(null);
+      setIsSelectingStart(false);
+    } else {
+      if (clickedDate < selectedStart) {
+        setSelectedEnd(selectedStart);
+        setSelectedStart(clickedDate);
+      } else {
+        setSelectedEnd(clickedDate);
+      }
+    }
+  };
+
+  const isDateInRange = (day) => {
+    if (!selectedStart || !selectedEnd) return false;
+    const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
+    return date >= selectedStart && date <= selectedEnd;
+  };
+
+  const isDateSelected = (day) => {
+    const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
+    return (
+      (selectedStart && date.toDateString() === selectedStart.toDateString()) ||
+      (selectedEnd && date.toDateString() === selectedEnd.toDateString())
+    );
+  };
+
+  const handleApply = () => {
+    if (selectedStart && selectedEnd) {
+      const startStr = selectedStart.toISOString().split('T')[0];
+      const endStr = selectedEnd.toISOString().split('T')[0];
+      onApply(startStr, endStr);
+      onClose();
+    }
+  };
+
+  const { firstDay, daysInMonth } = getDaysInMonth(currentMonth);
+  const calendarDays = [];
+  
+  for (let i = 0; i < firstDay; i++) {
+    calendarDays.push(null);
+  }
+  
+  for (let day = 1; day <= daysInMonth; day++) {
+    calendarDays.push(day);
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-60 z-[70] flex items-center justify-center p-4">
+      <div className="bg-white rounded-xl shadow-2xl max-w-md w-full overflow-hidden">
+        {/* Header with emerald gradient */}
+        <div className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white px-6 py-5 relative">
+          <h3 className="text-xl font-bold">Date Range</h3>
+          <p className="text-emerald-100 text-sm mt-1">Select start and end dates</p>
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 text-white hover:bg-emerald-800 w-9 h-9 rounded-full flex items-center justify-center text-2xl transition-colors"
+          >
+            ×
+          </button>
+        </div>
+
+        <div className="p-6">
+          {/* Date inputs */}
+          <div className="grid grid-cols-2 gap-3 mb-6">
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 mb-1">Start Date</label>
+              <input
+                type="text"
+                value={formatDateForInput(selectedStart)}
+                placeholder="MM/DD/YYYY"
+                readOnly
+                className="w-full px-3 py-2 border-2 border-emerald-200 rounded-lg text-sm focus:border-emerald-500 focus:outline-none bg-emerald-50"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 mb-1">End Date</label>
+              <input
+                type="text"
+                value={formatDateForInput(selectedEnd)}
+                placeholder="MM/DD/YYYY"
+                readOnly
+                className="w-full px-3 py-2 border-2 border-emerald-200 rounded-lg text-sm focus:border-emerald-500 focus:outline-none bg-emerald-50"
+              />
+            </div>
+          </div>
+
+          {/* Month navigation */}
+          <div className="flex items-center justify-between mb-4 bg-gray-50 p-2 rounded-lg">
+            <button
+              onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1))}
+              className="p-2 hover:bg-emerald-100 rounded-lg transition-colors"
+            >
+              <svg className="w-5 h-5 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <div className="text-base font-bold text-gray-800">
+              {months[currentMonth.getMonth()]} {currentMonth.getFullYear()}
+            </div>
+            <button
+              onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1))}
+              className="p-2 hover:bg-emerald-100 rounded-lg transition-colors"
+            >
+              <svg className="w-5 h-5 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Days of week */}
+          <div className="grid grid-cols-7 gap-1 mb-2">
+            {daysOfWeek.map((day, i) => (
+              <div key={i} className="text-center text-xs font-bold text-emerald-700 py-2">
+                {day}
+              </div>
+            ))}
+          </div>
+
+          {/* Calendar days */}
+          <div className="grid grid-cols-7 gap-1">
+            {calendarDays.map((day, index) => {
+              if (!day) return <div key={index} className="p-2"></div>;
+
+              const isSelected = isDateSelected(day);
+              const isInRange = isDateInRange(day);
+
+              return (
+                <button
+                  key={index}
+                  onClick={() => handleDateClick(day)}
+                  className={`p-2 text-sm rounded-lg font-medium transition-all ${
+                    isSelected
+                      ? "bg-emerald-600 text-white font-bold shadow-lg scale-110"
+                      : isInRange
+                      ? "bg-emerald-100 text-emerald-900"
+                      : "hover:bg-emerald-50 text-gray-700"
+                  }`}
+                >
+                  {day}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Footer buttons */}
+          <div className="mt-6 flex gap-3">
+            <button
+              onClick={onClose}
+              className="flex-1 px-4 py-2.5 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-semibold transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleApply}
+              disabled={!selectedStart || !selectedEnd}
+              className="flex-1 px-4 py-2.5 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors shadow-md"
+            >
+              Apply
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // Month Calendar Component
 function MonthCalendar({ onClose, onApply, selectedMonths = [] }) {
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
-  const [localSelectedMonths, setLocalSelectedMonths] =
-    useState(selectedMonths);
+  const [localSelectedMonths, setLocalSelectedMonths] = useState(selectedMonths);
 
   const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
   ];
 
   const handleMonthClick = (monthIndex) => {
-    const monthKey = `${currentYear}-${String(monthIndex + 1).padStart(
-      2,
-      "0"
-    )}`;
+    const monthKey = `${currentYear}-${String(monthIndex + 1).padStart(2, "0")}`;
     if (localSelectedMonths.includes(monthKey)) {
       setLocalSelectedMonths(localSelectedMonths.filter((m) => m !== monthKey));
     } else {
@@ -209,76 +364,55 @@ function MonthCalendar({ onClose, onApply, selectedMonths = [] }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl shadow-2xl max-w-md w-full">
-        <div className="bg-emerald-600 text-white px-6 py-4 rounded-t-xl flex justify-between items-center">
-          <h3 className="text-lg font-bold">Select Months</h3>
+    <div className="fixed inset-0 bg-black bg-opacity-60 z-[70] flex items-center justify-center p-4">
+      <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full overflow-hidden">
+        {/* Header with emerald gradient */}
+        <div className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white px-6 py-5 relative">
+          <h3 className="text-xl font-bold">Select Months</h3>
+          <p className="text-emerald-100 text-sm mt-1">Choose multiple months for your report</p>
           <button
             onClick={onClose}
-            className="text-2xl hover:bg-emerald-700 w-8 h-8 rounded-full flex items-center justify-center"
+            className="absolute top-4 right-4 text-white hover:bg-emerald-800 w-9 h-9 rounded-full flex items-center justify-center text-2xl transition-colors"
           >
             ×
           </button>
         </div>
 
         <div className="p-6">
-          <div className="flex justify-between items-center mb-4">
+          {/* Year selector */}
+          <div className="flex justify-between items-center mb-6 bg-gray-50 p-3 rounded-lg">
             <button
               onClick={() => setCurrentYear(currentYear - 1)}
-              className="p-2 hover:bg-gray-100 rounded"
+              className="p-2 hover:bg-emerald-100 rounded-lg transition-colors"
             >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 19l-7-7 7-7"
-                />
+              <svg className="w-5 h-5 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
-            <span className="text-xl font-bold text-emerald-800">
-              {currentYear}
-            </span>
+            <span className="text-2xl font-bold text-gray-800">{currentYear}</span>
             <button
               onClick={() => setCurrentYear(currentYear + 1)}
-              className="p-2 hover:bg-gray-100 rounded"
+              className="p-2 hover:bg-emerald-100 rounded-lg transition-colors"
             >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
+              <svg className="w-5 h-5 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </button>
           </div>
 
-          <div className="grid grid-cols-3 gap-2">
+          {/* Months grid */}
+          <div className="grid grid-cols-3 gap-3">
             {months.map((month, index) => {
-              const monthKey = `${currentYear}-${String(index + 1).padStart(
-                2,
-                "0"
-              )}`;
+              const monthKey = `${currentYear}-${String(index + 1).padStart(2, "0")}`;
               const isSelected = localSelectedMonths.includes(monthKey);
               return (
                 <button
                   key={index}
                   onClick={() => handleMonthClick(index)}
-                  className={`p-3 rounded-lg text-sm font-semibold transition-all ${
+                  className={`p-4 rounded-xl text-sm font-bold transition-all shadow-sm ${
                     isSelected
-                      ? "bg-emerald-600 text-white"
-                      : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                      ? "bg-emerald-600 text-white shadow-lg scale-105"
+                      : "bg-gray-100 hover:bg-emerald-50 text-gray-700 hover:text-emerald-700"
                   }`}
                 >
                   {month.substring(0, 3)}
@@ -287,16 +421,17 @@ function MonthCalendar({ onClose, onApply, selectedMonths = [] }) {
             })}
           </div>
 
+          {/* Footer buttons */}
           <div className="mt-6 flex gap-3">
             <button
               onClick={() => setLocalSelectedMonths([])}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 font-semibold"
+              className="flex-1 px-4 py-2.5 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-semibold transition-colors"
             >
-              Clear
+              Clear All
             </button>
             <button
               onClick={handleApply}
-              className="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-semibold"
+              className="flex-1 px-4 py-2.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-semibold transition-colors shadow-md"
             >
               Apply ({localSelectedMonths.length})
             </button>
@@ -307,8 +442,9 @@ function MonthCalendar({ onClose, onApply, selectedMonths = [] }) {
   );
 }
 
-// Filter Modal Component
+// Enhanced Filter Modal Component
 function FilterModal({ isOpen, onClose, onApplyFilters, events }) {
+  const [selectedCategory, setSelectedCategory] = useState("timePeriod");
   const [dateRange, setDateRange] = useState("all");
   const [selectedEvent, setSelectedEvent] = useState("all");
   const [gender, setGender] = useState("all");
@@ -316,8 +452,17 @@ function FilterModal({ isOpen, onClose, onApplyFilters, events }) {
   const [volunteerRange, setVolunteerRange] = useState("all");
   const [customDateFrom, setCustomDateFrom] = useState("");
   const [customDateTo, setCustomDateTo] = useState("");
+  const [showCustomCalendar, setShowCustomCalendar] = useState(false);
   const [showMonthCalendar, setShowMonthCalendar] = useState(false);
   const [selectedMonths, setSelectedMonths] = useState([]);
+
+  const categories = [
+    { id: "timePeriod", label: "Time Period" },
+    { id: "event", label: "Event"},
+    { id: "eventStatus", label: "Event Status"},
+    { id: "gender", label: "Gender"},
+    { id: "volunteers", label: "Volunteers"}
+  ];
 
   const handleApply = () => {
     onApplyFilters({
@@ -342,217 +487,263 @@ function FilterModal({ isOpen, onClose, onApplyFilters, events }) {
     setCustomDateFrom("");
     setCustomDateTo("");
     setSelectedMonths([]);
-    onApplyFilters({
-      dateRange: "all",
-      selectedEvent: "all",
-      gender: "all",
-      status: "all",
-      volunteerRange: "all",
-      customDateFrom: "",
-      customDateTo: "",
-      selectedMonths: [],
-    });
   };
 
   if (!isOpen) return null;
 
   return (
     <>
-      <div
-        className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4"
-        onClick={onClose}
-        style={{ backdropFilter: "blur(4px)" }}
-      >
-        <div
-          className="bg-white rounded-xl shadow-2xl border-2 border-emerald-500 max-w-xl w-full max-h-[90vh] overflow-y-auto"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="bg-emerald-600 text-white px-6 py-4 rounded-t-lg flex justify-between items-center sticky top-0 z-10">
-            <h3 className="text-xl font-bold font-montserrat flex items-center gap-2">
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+      <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4" onClick={onClose}>
+        <div className="bg-white rounded-2xl shadow-2xl max-w-5xl w-full flex overflow-hidden" style={{ height: "650px" }} onClick={(e) => e.stopPropagation()}>
+          
+          {/* Left Sidebar */}
+          <div className="w-1/3 border-r bg-white overflow-y-auto">
+            <div className="p-4 bg-emerald-900 text-white">
+              <h3 className="text-lg font-bold">Filter</h3>
+            </div>
+            {categories.map((category) => (
+              <button
+                key={category.id}
+                onClick={() => setSelectedCategory(category.id)}
+                className={`w-full px-6 py-4 text-left hover:bg-emerald-50 transition-all cursor-pointer ${
+                  selectedCategory === category.id
+                    ? "bg-emerald-100 border-l-4 border-emerald-600 font-bold text-emerald-900 shadow-sm"
+                    : "border-l-4 border-transparent text-gray-700"
+                }`}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
-                />
-              </svg>
-               Filters
-            </h3>
-            <button
-              onClick={onClose}
-              className="text-white hover:bg-emerald-700 text-3xl font-bold w-8 h-8 rounded-full flex items-center justify-center transition-colors cursor-pointer"
-            >
-              ×
-            </button>
+                <span className="text-xl mr-3">{category.icon}</span>
+                {category.label}
+              </button>
+            ))}
           </div>
 
-          <div className="p-6 space-y-6">
-            {/* Date Range Filter */}
-            <div className="border-b pb-4">
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Time Period
-              </label>
-              <select
-                value={dateRange}
-                onChange={(e) => {
-                  setDateRange(e.target.value);
-                  if (e.target.value === "specific-months") {
-                    setShowMonthCalendar(true);
-                  }
-                }}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+          {/* Right Content */}
+          <div className="flex-1 flex flex-col">
+            {/* Header */}
+            <div className="px-6 py-4 bg-emerald-900 text-white relative">
+              <h3 className="text-xl font-bold">{categories.find(c => c.id === selectedCategory)?.label}</h3>
+              <button
+                onClick={onClose}
+                className="absolute top-4 right-4 text-white hover:bg-emerald-800 w-9 h-9 rounded-full flex items-center justify-center text-2xl transition-colors cursor-pointer"
               >
-                <option value="all">All Time</option>
-                <option value="1week">Last Week</option>
-                <option value="1month">Last Month</option>
-                <option value="3months">Last 3 Months</option>
-                <option value="6months">Last 6 Months</option>
-                <option value="1year">Last Year</option>
-                <option value="specific-months">Select Specific Months</option>
-                <option value="custom">Custom Date Range</option>
-              </select>
+                ×
+              </button>
+            </div>
 
-              {dateRange === "specific-months" && selectedMonths.length > 0 && (
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {selectedMonths.map((month) => (
-                    <span
-                      key={month}
-                      className="px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-sm flex items-center gap-1"
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto p-6 bg-gray-50">
+              {selectedCategory === "timePeriod" && (
+                <div className="space-y-2">
+                  {[
+                    { value: "all", label: "All Time", desc: "No date restrictions" },
+                    { value: "today", label: "Today so far", desc: "Current day only" },
+                    { value: "yesterday", label: "Yesterday", desc: "Previous day" },
+                    { value: "1week", label: "Last 7 days", desc: "Past week" },
+                    { value: "1month", label: "Last 30 days", desc: "Past month" },
+                    { value: "thisMonth", label: "This month so far", desc: "Current month" },
+                    { value: "lastMonth", label: "Last month", desc: "Previous month" },
+                    { value: "specific-months", label: "Select Specific Months", desc: "Choose multiple months" },
+                    { value: "custom", label: "Custom Range", desc: "Pick start and end dates" }
+                  ].map((option) => (
+                    <label
+                      key={option.value}
+                      className={`flex items-start p-4 rounded-xl cursor-pointer transition-all border-2 ${
+                        dateRange === option.value 
+                          ? "bg-emerald-50 border-emerald-500 shadow-md" 
+                          : "bg-white border-gray-200 hover:border-emerald-300 hover:bg-emerald-50"
+                      }`}
                     >
-                      {new Date(month + "-01").toLocaleDateString("en-US", {
-                        month: "short",
-                        year: "numeric",
-                      })}
-                      <button
-                        onClick={() =>
-                          setSelectedMonths(
-                            selectedMonths.filter((m) => m !== month)
-                          )
-                        }
-                        className="hover:bg-emerald-200 rounded-full"
-                      >
-                        ×
-                      </button>
-                    </span>
+                      <input
+                        type="radio"
+                        name="dateRange"
+                        value={option.value}
+                        checked={dateRange === option.value}
+                        onChange={(e) => {
+                          setDateRange(e.target.value);
+                          if (e.target.value === "custom") {
+                            setShowCustomCalendar(true);
+                          } else if (e.target.value === "specific-months") {
+                            setShowMonthCalendar(true);
+                          }
+                        }}
+                        className="mt-1 w-4 h-4 text-emerald-600"
+                      />
+                      <div className="ml-3 flex-1">
+                        <div className="font-semibold text-gray-800">{option.label}</div>
+                        <div className="text-xs text-gray-500 mt-0.5">{option.desc}</div>
+                      </div>
+                    </label>
+                  ))}
+
+                  {dateRange === "custom" && customDateFrom && customDateTo && (
+                    <div className="mt-4 p-4 bg-emerald-100 border-2 border-emerald-500 rounded-xl">
+                      <p className="text-sm font-bold text-emerald-900 mb-1">📅 Selected Range:</p>
+                      <p className="text-sm text-emerald-700 font-medium">{customDateFrom} → {customDateTo}</p>
+                    </div>
+                  )}
+
+                  {dateRange === "specific-months" && selectedMonths.length > 0 && (
+                    <div className="mt-4 p-4 bg-emerald-100 border-2 border-emerald-500 rounded-xl">
+                      <p className="text-sm font-bold text-emerald-900 mb-2">📅 Selected Months:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedMonths.map((month) => (
+                          <span
+                            key={month}
+                            className="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-sm flex items-center gap-2 font-medium shadow-sm"
+                          >
+                            {new Date(month + "-01").toLocaleDateString("en-US", {
+                              month: "short",
+                              year: "numeric",
+                            })}
+                            <button
+                              onClick={() => setSelectedMonths(selectedMonths.filter((m) => m !== month))}
+                              className="hover:bg-emerald-700 rounded-full w-5 h-5 flex items-center justify-center font-bold"
+                            >
+                              ×
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {selectedCategory === "event" && (
+                <div className="space-y-2">
+                  <label className={`flex items-center p-4 rounded-xl cursor-pointer transition-all border-2 ${
+                    selectedEvent === "all" ? "bg-emerald-50 border-emerald-500 shadow-md" : "bg-white border-gray-200 hover:border-emerald-300"
+                  }`}>
+                    <input
+                      type="radio"
+                      name="event"
+                      value="all"
+                      checked={selectedEvent === "all"}
+                      onChange={(e) => setSelectedEvent(e.target.value)}
+                      className="w-4 h-4 text-emerald-600"
+                    />
+                    <span className="ml-3 font-semibold text-gray-800">All Events</span>
+                  </label>
+                  {events.map((event) => (
+                    <label
+                      key={event.event_id}
+                      className={`flex items-center p-4 rounded-xl cursor-pointer transition-all border-2 ${
+                        selectedEvent === event.event_id ? "bg-emerald-50 border-emerald-500 shadow-md" : "bg-white border-gray-200 hover:border-emerald-300"
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="event"
+                        value={event.event_id}
+                        checked={selectedEvent === event.event_id}
+                        onChange={(e) => setSelectedEvent(e.target.value)}
+                        className="w-4 h-4 text-emerald-600"
+                      />
+                      <span className="ml-3 font-medium text-gray-800 truncate">{event.event_title}</span>
+                    </label>
                   ))}
                 </div>
               )}
 
-              {dateRange === "custom" && (
-                <div className="grid grid-cols-2 gap-3 mt-3">
-                  <div>
-                    <label className="block text-xs text-gray-600 mb-1">
-                      From
+              {selectedCategory === "eventStatus" && (
+                <div className="space-y-2">
+                  {[
+                    { value: "all", label: "All Statuses"},
+                    { value: "UPCOMING", label: "Upcoming"},
+                    { value: "ONGOING", label: "Ongoing"},
+                    { value: "COMPLETED", label: "Completed"}
+                  ].map((option) => (
+                    <label
+                      key={option.value}
+                      className={`flex items-center p-4 rounded-xl cursor-pointer transition-all border-2 ${
+                        status === option.value ? "bg-emerald-50 border-emerald-500 shadow-md" : "bg-white border-gray-200 hover:border-emerald-300"
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="status"
+                        value={option.value}
+                        checked={status === option.value}
+                        onChange={(e) => setStatus(e.target.value)}
+                        className="w-4 h-4 text-emerald-600"
+                      />
+                      <span className="ml-3 text-xl">{option.icon}</span>
+                      <span className="ml-2 font-semibold text-gray-800">{option.label}</span>
                     </label>
-                    <input
-                      type="date"
-                      value={customDateFrom}
-                      onChange={(e) => setCustomDateFrom(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs text-gray-600 mb-1">
-                      To
+                  ))}
+                </div>
+              )}
+
+              {selectedCategory === "gender" && (
+                <div className="space-y-2">
+                  {[
+                    { value: "all", label: "All Genders"},
+                    { value: "Male", label: "Male"},
+                    { value: "Female", label: "Female"}
+                  ].map((option) => (
+                    <label
+                      key={option.value}
+                      className={`flex items-center p-4 rounded-xl cursor-pointer transition-all border-2 ${
+                        gender === option.value ? "bg-emerald-50 border-emerald-500 shadow-md" : "bg-white border-gray-200 hover:border-emerald-300"
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="gender"
+                        value={option.value}
+                        checked={gender === option.value}
+                        onChange={(e) => setGender(e.target.value)}
+                        className="w-4 h-4 text-emerald-600"
+                      />
+                      <span className="ml-3 text-xl">{option.icon}</span>
+                      <span className="ml-2 font-semibold text-gray-800">{option.label}</span>
                     </label>
-                    <input
-                      type="date"
-                      value={customDateTo}
-                      onChange={(e) => setCustomDateTo(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500"
-                    />
-                  </div>
+                  ))}
+                </div>
+              )}
+
+              {selectedCategory === "volunteers" && (
+                <div className="space-y-2">
+                  {[
+                    { value: "all", label: "All Ranges"},
+                    { value: "1-50", label: "1 - 50 volunteers"},
+                    { value: "51-100", label: "51 - 100 volunteers"},
+                    { value: "101-200", label: "101 - 200 volunteers"},
+                    { value: "201+", label: "201+ volunteers"}
+                  ].map((option) => (
+                    <label
+                      key={option.value}
+                      className={`flex items-center p-4 rounded-xl cursor-pointer transition-all border-2 ${
+                        volunteerRange === option.value ? "bg-emerald-50 border-emerald-500 shadow-md" : "bg-white border-gray-200 hover:border-emerald-300"
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="volunteerRange"
+                        value={option.value}
+                        checked={volunteerRange === option.value}
+                        onChange={(e) => setVolunteerRange(e.target.value)}
+                        className="w-4 h-4 text-emerald-600"
+                      />
+                      <span className="ml-3 text-xl">{option.icon}</span>
+                      <span className="ml-2 font-semibold text-gray-800">{option.label}</span>
+                    </label>
+                  ))}
                 </div>
               )}
             </div>
 
-            {/* Event Filter */}
-            <div className="border-b pb-4">
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Event
-              </label>
-              <select
-                value={selectedEvent}
-                onChange={(e) => setSelectedEvent(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-              >
-                <option value="all">All Events</option>
-                {events.map((event) => (
-                  <option key={event.event_id} value={event.event_id}>
-                    {event.event_title}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Event Status Filter */}
-            <div className="border-b pb-4">
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Event Status
-              </label>
-              <select
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-              >
-                <option value="all">All Statuses</option>
-                <option value="UPCOMING">Upcoming</option>
-                <option value="ONGOING">Ongoing</option>
-                <option value="COMPLETED">Completed</option>
-              </select>
-            </div>
-
-            {/* Gender Filter */}
-            <div className="border-b pb-4">
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Gender
-              </label>
-              <select
-                value={gender}
-                onChange={(e) => setGender(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-              >
-                <option value="all">All Genders</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-              </select>
-            </div>
-
-            {/* Volunteer Count Range */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Volunteer
-              </label>
-              <select
-                value={volunteerRange}
-                onChange={(e) => setVolunteerRange(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-              >
-                <option value="all">All Ranges</option>
-                <option value="1-50">1 - 50 volunteers</option>
-                <option value="51-100">51 - 100 volunteers</option>
-                <option value="101-200">101 - 200 volunteers</option>
-                <option value="201+">201+ volunteers</option>
-              </select>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex gap-3 pt-4">
+            {/* Footer */}
+            <div className="px-6 py-4 bg-white border-t-2 border-gray-200 flex gap-3">
               <button
                 onClick={handleReset}
-                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg bg-gray-200 hover:bg-gray-300 font-semibold transition-colors cursor-pointer"
+                className="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-100 font-bold transition-all cursor-pointer"
               >
-                Reset
+                Reset 
               </button>
               <button
                 onClick={handleApply}
-                className="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-semibold transition-colors cursor-pointer"
+                className="flex-1 px-6 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 font-bold transition-all shadow-lg cursor-pointer"
               >
                 Apply 
               </button>
@@ -561,10 +752,26 @@ function FilterModal({ isOpen, onClose, onApplyFilters, events }) {
         </div>
       </div>
 
+      {showCustomCalendar && (
+        <CustomCalendar
+          onClose={() => setShowCustomCalendar(false)}
+          onApply={(start, end) => {
+            setCustomDateFrom(start);
+            setCustomDateTo(end);
+            setShowCustomCalendar(false);
+          }}
+          startDate={customDateFrom}
+          endDate={customDateTo}
+        />
+      )}
+
       {showMonthCalendar && (
         <MonthCalendar
           onClose={() => setShowMonthCalendar(false)}
-          onApply={(months) => setSelectedMonths(months)}
+          onApply={(months) => {
+            setSelectedMonths(months);
+            setShowMonthCalendar(false);
+          }}
           selectedMonths={selectedMonths}
         />
       )}
@@ -572,13 +779,19 @@ function FilterModal({ isOpen, onClose, onApplyFilters, events }) {
   );
 }
 
-// Report Modal Component
+// Enhanced Report Modal Component
 function ReportModal({ isOpen, onClose, onGenerate }) {
+  const [selectedCategory, setSelectedCategory] = useState("reportType");
+  const [reportType, setReportType] = useState("single");
   const [selectedMonth, setSelectedMonth] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
   const [showMonthCalendar, setShowMonthCalendar] = useState(false);
   const [selectedMonths, setSelectedMonths] = useState([]);
-  const [reportType, setReportType] = useState("single");
+
+  const categories = [
+    { id: "reportType", label: "Report Type"},
+    { id: "period", label: "Period Selection"}
+  ];
 
   const handleGenerate = () => {
     if (reportType === "single" && (!selectedMonth || !selectedYear)) {
@@ -589,6 +802,10 @@ function ReportModal({ isOpen, onClose, onGenerate }) {
       alert("Please select at least one month.");
       return;
     }
+    if (reportType === "annual" && !selectedYear) {
+      alert("Please select a year first.");
+      return;
+    }
     onGenerate(
       reportType === "single" ? selectedMonth : selectedMonths,
       selectedYear,
@@ -596,145 +813,213 @@ function ReportModal({ isOpen, onClose, onGenerate }) {
     );
   };
 
+  const handleReset = () => {
+    setSelectedMonth("");
+    setSelectedYear("");
+    setSelectedMonths([]);
+    setReportType("single");
+  };
+
   if (!isOpen) return null;
 
   return (
     <>
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-emerald-900">
-               Generate Report
-            </h2>
-            <button
-              onClick={onClose}
-              className="text-gray-500 hover:text-gray-700 text-2xl cursor-pointer"
-            >
-              ×
-            </button>
+      <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl shadow-2xl max-w-5xl w-full flex overflow-hidden" style={{ height: "650px" }} onClick={(e) => e.stopPropagation()}>
+          
+          {/* Left Sidebar */}
+          <div className="w-1/3 border-r bg-white overflow-y-auto">
+            <div className="p-4 bg-emerald-900 text-white">
+              <h3 className="text-lg font-bold">Report Generator</h3>
+            </div>
+            {categories.map((category) => (
+              <button
+                key={category.id}
+                onClick={() => setSelectedCategory(category.id)}
+                className={`w-full px-6 py-4 text-left hover:bg-emerald-100 transition-all cursor-pointer ${
+                  selectedCategory === category.id
+                    ? "bg-emerald-50 border-l-4 border-emerald-600 font-bold text-emerald-700 shadow-sm"
+                    : "border-l-4 border-transparent text-gray-700"
+                }`}
+              >
+                <span className="text-xl mr-3">{category.icon}</span>
+                {category.label}
+              </button>
+            ))}
           </div>
 
-          <div className="space-y-5">
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Report Type
-              </label>
-              <select
-                value={reportType}
-                onChange={(e) => setReportType(e.target.value)}
-                className="w-full border-2 border-emerald-900 rounded-lg px-4 py-3 text-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          {/* Right Content */}
+          <div className="flex-1 flex flex-col">
+            {/* Header */}
+            <div className="px-6 py-4 bg-emerald-900 text-white relative">
+              <h3 className="text-xl font-bold">{categories.find(c => c.id === selectedCategory)?.label}</h3>
+              <button
+                onClick={onClose}
+                className="absolute top-4 right-4 text-white hover:bg-emerald-800 w-9 h-9 rounded-full flex items-center justify-center text-2xl transition-colors cursor-pointer"
               >
-                <option value="single">Single Month</option>
-                <option value="multiple">Multiple Months</option>
-                <option value="annual">Annual Report</option>
-              </select>
+                ×
+              </button>
             </div>
 
-            {reportType === "single" && (
-              <>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Select Month
-                  </label>
-                  <select
-                    value={selectedMonth}
-                    onChange={(e) => setSelectedMonth(e.target.value)}
-                    className="w-full border-2 border-emerald-900 rounded-lg px-4 py-3 text-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  >
-                    <option value="">-- Select Month --</option>
-                    {Array.from({ length: 12 }, (_, i) => (
-                      <option key={i + 1} value={i + 1}>
-                        {new Date(0, i).toLocaleString("default", {
-                          month: "long",
-                        })}
-                      </option>
-                    ))}
-                  </select>
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto p-6 bg-gray-50">
+              {selectedCategory === "reportType" && (
+                <div className="space-y-3">
+                  {[
+                    { value: "single", label: "Single Month", desc: "Generate report for a specific month"},
+                    { value: "multiple", label: "Multiple Months", desc: "Generate report for selected months"},
+                    { value: "annual", label: "Annual Report", desc: "Generate yearly report"}
+                  ].map((option) => (
+                    <label
+                      key={option.value}
+                      className={`flex items-start p-5 rounded-xl cursor-pointer border-2 transition-all ${
+                        reportType === option.value 
+                          ? "bg-emerald-50 border-emerald-500 shadow-lg" 
+                          : "bg-white border-gray-200 hover:border-emerald-300 hover:bg-emerald-50"
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="reportType"
+                        value={option.value}
+                        checked={reportType === option.value}
+                        onChange={(e) => setReportType(e.target.value)}
+                        className="mt-1 w-4 h-4 text-emerald-600"
+                      />
+                      <div className="ml-3 flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xl">{option.icon}</span>
+                          <div className="font-bold text-gray-800">{option.label}</div>
+                        </div>
+                        <div className="text-sm text-gray-600 mt-1">{option.desc}</div>
+                      </div>
+                    </label>
+                  ))}
                 </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Select Year
-                  </label>
-                  <select
-                    value={selectedYear}
-                    onChange={(e) => setSelectedYear(e.target.value)}
-                    className="w-full border-2 border-emerald-900 rounded-lg px-4 py-3 text-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  >
-                    <option value="">-- Select Year --</option>
-                    {[2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030].map(
-                      (year) => (
-                        <option key={year} value={year}>
-                          {year}
-                        </option>
-                      )
-                    )}
-                  </select>
-                </div>
-              </>
-            )}
+              )}
 
-            {reportType === "multiple" && (
-              <div>
-                <button
-                  onClick={() => setShowMonthCalendar(true)}
-                  className="w-full border-2 border-emerald-900 rounded-lg px-4 py-3 text-emerald-900 hover:bg-emerald-50 font-semibold"
-                >
-                  Select Months ({selectedMonths.length} selected)
-                </button>
-                {selectedMonths.length > 0 && (
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {selectedMonths.map((month) => (
-                      <span
-                        key={month}
-                        className="px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-sm"
-                      >
-                        {new Date(month + "-01").toLocaleDateString("en-US", {
-                          month: "short",
-                          year: "numeric",
-                        })}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {reportType === "annual" && (
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Select Year
-                </label>
-                <select
-                  value={selectedYear}
-                  onChange={(e) => setSelectedYear(e.target.value)}
-                  className="w-full border-2 border-emerald-900 rounded-lg px-4 py-3 text-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                >
-                  <option value="">-- Select Year --</option>
-                  {[2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030].map(
-                    (year) => (
-                      <option key={year} value={year}>
-                        {year}
-                      </option>
-                    )
+              {selectedCategory === "period" && (
+                <div className="space-y-5">
+                  {reportType === "single" && (
+                    <>
+                      <div>
+                        <label className="text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
+                          Select Month
+                        </label>
+                        <select
+                          value={selectedMonth}
+                          onChange={(e) => setSelectedMonth(e.target.value)}
+                          className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-emerald-500 focus:outline-none bg-white font-medium"
+                        >
+                          <option value="">-- Select Month --</option>
+                          {Array.from({ length: 12 }, (_, i) => (
+                            <option key={i + 1} value={i + 1}>
+                              {new Date(0, i).toLocaleString("default", { month: "long" })}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label className=" text-sm font-bold text-gray-700 mt-2 mb-2 flex items-center gap-2">
+                           Select Year
+                        </label>
+                        <select
+                          value={selectedYear}
+                          onChange={(e) => setSelectedYear(e.target.value)}
+                          className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-emerald-500 focus:outline-none bg-white font-medium"
+                        >
+                          <option value="">-- Select Year --</option>
+                          {[2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030].map((year) => (
+                            <option key={year} value={year}>
+                              {year}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </>
                   )}
-                </select>
-              </div>
-            )}
-          </div>
 
-          <div className="flex gap-3 mt-8">
-            <button
-              onClick={onClose}
-              className="flex-1 bg-gray-300 text-gray-700 font-semibold px-4 py-3 rounded-lg hover:bg-gray-400 transition"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleGenerate}
-              className="flex-1 bg-emerald-900 text-white font-semibold px-4 py-3 rounded-lg hover:bg-emerald-800 transition"
-            >
-              Generate PDF
-            </button>
+                  {reportType === "multiple" && (
+                    <div>
+                      <label className=" text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
+                        Select Multiple Months
+                      </label>
+                      <button
+                        onClick={() => setShowMonthCalendar(true)}
+                        className="w-full px-5 py-4 border-2 border-emerald-600 bg-emerald-50 text-emerald-700 rounded-xl hover:bg-emerald-100 font-bold transition-all shadow-sm"
+                      >
+                        Choose Months ({selectedMonths.length} selected)
+                      </button>
+                      {selectedMonths.length > 0 && (
+                        <div className="mt-4 p-4 bg-emerald-100 border-2 border-emerald-500 rounded-xl">
+                          <p className="text-sm font-bold text-emerald-900 mb-2">Selected Months:</p>
+                          <div className="flex flex-wrap gap-2">
+                            {selectedMonths.map((month) => (
+                              <span
+                                key={month}
+                                className="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-sm flex items-center gap-2 font-medium shadow-sm"
+                              >
+                                {new Date(month + "-01").toLocaleDateString("en-US", {
+                                  month: "short",
+                                  year: "numeric",
+                                })}
+                                <button
+                                  onClick={() =>
+                                    setSelectedMonths(selectedMonths.filter((m) => m !== month))
+                                  }
+                                  className="hover:bg-emerald-700 rounded-full w-5 h-5 flex items-center justify-center font-bold"
+                                >
+                                  ×
+                                </button>
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {reportType === "annual" && (
+                    <div>
+                      <label className="text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
+                        Select Year
+                      </label>
+                      <select
+                        value={selectedYear}
+                        onChange={(e) => setSelectedYear(e.target.value)}
+                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-emerald-500 focus:outline-none bg-white font-medium"
+                      >
+                        <option value="">-- Select Year --</option>
+                        {[2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030].map((year) => (
+                          <option key={year} value={year}>
+                            {year}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="px-6 py-4 bg-white border-t-2 border-gray-200 flex gap-3">
+              <button
+                onClick={handleReset}
+                className="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 font-bold transition-all cursor-pointer"
+              >
+                Reset
+              </button>
+              <button
+                onClick={handleGenerate}
+                className="flex-1 px-6 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 font-bold transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Generate PDF Report
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -754,14 +1039,7 @@ function ReportModal({ isOpen, onClose, onGenerate }) {
 }
 
 // Chart Modal with Real-time Gender Breakdown
-function ChartModal({
-  isOpen,
-  onClose,
-  title,
-  children,
-  showGenderBreakdown,
-  genderData,
-}) {
+function ChartModal({ isOpen, onClose, title, children, showGenderBreakdown, genderData }) {
   if (!isOpen) return null;
 
   return (
@@ -857,8 +1135,9 @@ function ChartModal({
     </div>
   );
 }
+
 // MAIN DASHBOARD COMPONENT
-function DashboardPage() {
+export default function DashboardPage() {
   const { ngoCode } = useParams();
   const [dashboardData, setDashboardData] = useState({
     ngoName: "",
@@ -998,8 +1277,6 @@ function DashboardPage() {
           .map((v) => v.user_id) || [];
 
       const totalVolunteers = volunteerIds.length;
-
-      // ✅ USE REAL-TIME GENDER FETCH FUNCTION
       const genderData = await fetchGenderDataRealtime(volunteerIds);
 
       const { data: allApplications } = await supabase
@@ -1080,7 +1357,7 @@ function DashboardPage() {
         beneficiaryReach,
         feedbackScore: 5,
         events: events || [],
-        volunteerGenderData: genderData, // ✅ REAL-TIME GENDER DATA
+        volunteerGenderData: genderData,
       });
 
       await generateGrowthData(ngoCode);
@@ -1101,26 +1378,28 @@ function DashboardPage() {
         .select("*")
         .eq("ngo_id", viewingContext.ngo_code);
 
-      // Apply date filters
       if (activeFilters.dateRange !== "all") {
         const now = new Date();
         let startDate;
 
         switch (activeFilters.dateRange) {
+          case "today":
+            startDate = new Date(now.setHours(0, 0, 0, 0));
+            break;
+          case "yesterday":
+            startDate = new Date(now.setDate(now.getDate() - 1));
+            break;
           case "1week":
             startDate = new Date(now.setDate(now.getDate() - 7));
             break;
           case "1month":
             startDate = new Date(now.setMonth(now.getMonth() - 1));
             break;
-          case "3months":
-            startDate = new Date(now.setMonth(now.getMonth() - 3));
+          case "thisMonth":
+            startDate = new Date(now.getFullYear(), now.getMonth(), 1);
             break;
-          case "6months":
-            startDate = new Date(now.setMonth(now.getMonth() - 6));
-            break;
-          case "1year":
-            startDate = new Date(now.setFullYear(now.getFullYear() - 1));
+          case "lastMonth":
+            startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
             break;
           case "custom":
             if (activeFilters.customDateFrom) {
@@ -1141,12 +1420,10 @@ function DashboardPage() {
         }
       }
 
-      // Apply event filter
       if (activeFilters.selectedEvent !== "all") {
         query = query.eq("event_id", activeFilters.selectedEvent);
       }
 
-      // Apply status filter
       if (activeFilters.status !== "all") {
         query = query.eq("status", activeFilters.status);
       }
@@ -1155,7 +1432,6 @@ function DashboardPage() {
         ascending: false,
       });
 
-      // Apply volunteer range filter
       let finalEvents = filteredEvents || [];
       if (activeFilters.volunteerRange !== "all") {
         finalEvents = finalEvents.filter((event) => {
@@ -1175,7 +1451,6 @@ function DashboardPage() {
         });
       }
 
-      // Apply specific months filter if selected
       if (
         activeFilters.dateRange === "specific-months" &&
         activeFilters.selectedMonths.length > 0
@@ -1187,7 +1462,6 @@ function DashboardPage() {
         });
       }
 
-      // ✅ FETCH VOLUNTEERS AND APPLY REAL-TIME GENDER COUNTING
       let filteredVolunteerIds = [];
 
       if (finalEvents.length > 0) {
@@ -1220,7 +1494,6 @@ function DashboardPage() {
             .map((v) => v.user_id) || [];
       }
 
-      // ✅ Apply gender filter BEFORE counting
       if (activeFilters.gender !== "all") {
         const { data: usersData } = await supabase
           .from("User_Information")
@@ -1231,12 +1504,9 @@ function DashboardPage() {
         filteredVolunteerIds = usersData?.map((u) => u.user_id) || [];
       }
 
-      // ✅ GET REAL-TIME GENDER DATA
       const genderData = await fetchGenderDataRealtime(filteredVolunteerIds);
-
       const totalFiltered = filteredVolunteerIds.length;
 
-      // Update dashboard with filtered data
       const completedEvents = finalEvents.filter(
         (e) => e.status === "COMPLETED"
       ).length;
@@ -1244,7 +1514,6 @@ function DashboardPage() {
       const completionRate =
         totalEvents > 0 ? Math.round((completedEvents / totalEvents) * 100) : 0;
 
-      // Calculate participation rate
       let participationRate = 0;
       if (filteredVolunteerIds.length > 0 && finalEvents.length > 0) {
         const eventIds = finalEvents.map((e) => e.event_id);
@@ -1269,7 +1538,7 @@ function DashboardPage() {
         completionRate,
         totalVolunteers: totalFiltered,
         participationRate,
-        volunteerGenderData: genderData, // ✅ REAL-TIME UPDATE
+        volunteerGenderData: genderData,
       }));
 
       generateEventsPerformanceData(finalEvents);
@@ -1308,7 +1577,6 @@ function DashboardPage() {
         );
       }
 
-      // ✅ GET REAL-TIME GENDER DATA
       const userIds = [...new Set(filteredEventUsers.map((eu) => eu.user_id))];
       const { data: usersData } = await supabase
         .from("User_Information")
@@ -1462,7 +1730,6 @@ function DashboardPage() {
 
       if (!eventUsers || eventUsers.length === 0) return;
 
-      // ✅ GET REAL-TIME GENDER DATA
       const userIds = [...new Set(eventUsers.map((eu) => eu.user_id))];
       const { data: usersData } = await supabase
         .from("User_Information")
@@ -1738,7 +2005,6 @@ function DashboardPage() {
         <p className="text-4xl font-extrabold font-montserrat text-emerald-700">
           {dashboardData.totalVolunteers}
         </p>
-        {/* REAL-TIME GENDER DISPLAY */}
         <div className="mt-3 flex justify-center gap-4">
           <div className="text-center transform transition-all hover:scale-110">
             <p className="text-sm text-blue-600 font-semibold flex items-center justify-center gap-1">
@@ -1753,7 +2019,7 @@ function DashboardPage() {
             <p className="text-sm text-pink-600 font-semibold flex items-center justify-center gap-1">
               <img src={FemaleIcon} alt="Female Icon" className="w-4 h-4" />{" "}
               {dashboardData.volunteerGenderData.female}
-            </p>{" "}
+            </p>
             <p className="text-xs text-gray-500">
               Female ({dashboardData.volunteerGenderData.femalePercentage}%)
             </p>
@@ -2037,7 +2303,6 @@ function DashboardPage() {
             </div>
           )}
 
-          {/* Active Filters Display */}
           {(activeFilters.dateRange !== "all" ||
             activeFilters.selectedEvent !== "all" ||
             activeFilters.gender !== "all" ||
@@ -2118,7 +2383,6 @@ function DashboardPage() {
             </div>
           )}
 
-          {/* ROW 1: Fixed - Greetings, Create Announcement, Create Event */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
             <div
               className="p-5 text-center rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-shadow"
@@ -2163,7 +2427,6 @@ function DashboardPage() {
             </Link>
           </div>
 
-          {/* ROW 2: Draggable Cards - 3 columns with equal height */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
             {getSortedItems()
               .slice(0, 3)
@@ -2174,9 +2437,7 @@ function DashboardPage() {
               ))}
           </div>
 
-          {/* ROW 3: Draggable Cards - Mixed layout */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 w-full">
-            {/* First two large cards */}
             <div className="h-full">
               {getSortedItems()[3] &&
                 renderDraggableCard(
@@ -2192,7 +2453,6 @@ function DashboardPage() {
                 )}
             </div>
 
-            {/* Three stacked small cards with equal heights */}
             <div className="flex flex-col gap-4 h-full">
               {getSortedItems()
                 .slice(5, 8)
@@ -2204,7 +2464,6 @@ function DashboardPage() {
             </div>
           </div>
 
-          {/* ROW 4: Events Performance - Full Width */}
           {chartData.eventsPerformance.length > 0 && (
             <div
               onClick={() => openModal("eventsPerformance")}
@@ -2244,7 +2503,6 @@ function DashboardPage() {
         </div>
       </main>
 
-      {/* Filter Modal */}
       <FilterModal
         isOpen={filterModalOpen}
         onClose={() => setFilterModalOpen(false)}
@@ -2252,14 +2510,12 @@ function DashboardPage() {
         events={dashboardData.events}
       />
 
-      {/* Report Modal */}
       <ReportModal
         isOpen={reportModalOpen}
         onClose={() => setReportModalOpen(false)}
         onGenerate={handleGenerateReport}
       />
 
-      {/* ALL MODALS WITH REAL-TIME GENDER BREAKDOWN */}
       <ChartModal
         isOpen={modalState.isOpen && modalState.type === "volunteers"}
         onClose={closeModal}
@@ -2304,7 +2560,6 @@ function DashboardPage() {
         </div>
       </ChartModal>
 
-      {/* Other modals remain the same, just adding the rest of them */}
       <ChartModal
         isOpen={modalState.isOpen && modalState.type === "completion"}
         onClose={closeModal}
@@ -2701,5 +2956,3 @@ function DashboardPage() {
     </div>
   );
 }
-
-export default DashboardPage;
